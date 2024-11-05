@@ -545,7 +545,23 @@ int main() {
     }
     printf("\n");
     
+    cudaEvent_t start, stop;
+    float milliseconds = 0;
+
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+    cudaEventRecord(start);
+
     train(&nn, X_train, y_train);
+    cudaEventRecord(stop);
+
+    cudaEventSynchronize(stop);
+    cudaEventElapsedTime(&milliseconds, start, stop);
+
+    printf("V1 parallel execution time: %f ms\n", milliseconds);
+    // Clean up
+    cudaEventDestroy(start);
+    cudaEventDestroy(stop);
 
     // Add test evaluation code here
     float *d_X_test, *d_hidden1, *d_hidden2, *d_output;

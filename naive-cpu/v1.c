@@ -375,9 +375,16 @@ int main() {
         printf("%d ", y_train[i]);
     }
     printf("\n");
+    clock_t start,end;
+    double cpu_time_used;
 
+    start = clock();
     train(&nn, X_train, y_train);
+    end = clock();
 
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+
+    printf("Time used: %f seconds", cpu_time_used);
     free(nn.weights1);
     free(nn.weights2);
     free(nn.bias1);

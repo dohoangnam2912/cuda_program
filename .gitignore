@@ -6,3 +6,5 @@ python/venv
 .gitignore
 mnist_data
 dev
+assets
+python

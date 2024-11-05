@@ -11,7 +11,7 @@
 #define TRAIN_SIZE 10000
 #define TEST_SIZE 1000
 #define BATCH_SIZE 4
-#define EPOCHS 3
+#define EPOCHS 10
 #define LEARNING_RATE 0.001
 
 typedef struct {
@@ -527,8 +527,24 @@ int main() {
         printf("%d ", y_train[i]);
     }
     printf("\n");
-    
+
+    cudaEvent_t start, stop;
+    float milliseconds = 0;
+
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+    cudaEventRecord(start);
+
     train(&nn, X_train, y_train);
+    cudaEventRecord(stop);
+
+    cudaEventSynchronize(stop);
+    cudaEventElapsedTime(&milliseconds, start, stop);
+
+    printf("V1 parallel execution time: %f ms\n", milliseconds);
+    // Clean up
+    cudaEventDestroy(start);
+    cudaEventDestroy(stop);
 
     CUDA_CHECK(cudaFree(nn.weights1));
     CUDA_CHECK(cudaFree(nn.weights2));
