@@ -10,8 +10,8 @@
 #define TRAIN_SIZE 10000
 #define TEST_SIZE 1000
 #define BATCH_SIZE 4
-#define EPOCHS 10
-#define LEARNING_RATE 0.001
+#define EPOCHS 1000
+#define LEARNING_RATE 0.0001
 
 typedef struct {
     float *weights1;

@@ -11,7 +11,7 @@
 #define TEST_SIZE 1000
 #define BATCH_SIZE 4
 #define EPOCHS 10
-#define LEARNING_RATE 0.01
+#define LEARNING_RATE 0.001
 #define NUM_TEST_SAMPLES 20
 
 typedef struct {
@@ -283,7 +283,7 @@ void backward(NeuralNetwork *nn, float *input, float *hidden1, float *hidden2, f
     }
     // retains its shape since its just a point-wise operation
     // Update gradients for weights1 (W1.grad = d_ReLU_out.T @ input)
-    matmul_at_b(input, d_ReLU_out1, nn->grad_weights1, batch_size, HIDDEN_SIZE, HIDDEN_SIZE);
+    matmul_at_b(input, d_ReLU_out1, nn->grad_weights1, batch_size, INPUT_SIZE, HIDDEN_SIZE);
 
     // Update gradients for bias1
     bias_backward(nn->grad_bias1, d_ReLU_out1, batch_size, HIDDEN_SIZE);
@@ -366,18 +366,24 @@ void train(NeuralNetwork *nn, float *X_train, int *y_train) {
 // Modify the initialize function to allocate memory for gradients
 void initialize_neural_network(NeuralNetwork *nn) {
     nn->weights1 = malloc(HIDDEN_SIZE * INPUT_SIZE * sizeof(float));
-    nn->weights2 = malloc(OUTPUT_SIZE * HIDDEN_SIZE * sizeof(float));
+    nn->weights2 = malloc(HIDDEN_SIZE * HIDDEN_SIZE * sizeof(float));
+    nn->weights3 = malloc(OUTPUT_SIZE * HIDDEN_SIZE * sizeof(float));
     nn->bias1 = malloc(HIDDEN_SIZE * sizeof(float));
-    nn->bias2 = malloc(OUTPUT_SIZE * sizeof(float));
+    nn->bias2 = malloc(HIDDEN_SIZE * sizeof(float));
+    nn->bias3 = malloc(OUTPUT_SIZE * sizeof(float));
     nn->grad_weights1 = malloc(HIDDEN_SIZE * INPUT_SIZE * sizeof(float));
-    nn->grad_weights2 = malloc(OUTPUT_SIZE * HIDDEN_SIZE * sizeof(float));
+    nn->grad_weights2 = malloc(HIDDEN_SIZE * HIDDEN_SIZE * sizeof(float));
+    nn->grad_weights3 = malloc(OUTPUT_SIZE * HIDDEN_SIZE * sizeof(float));
     nn->grad_bias1 = malloc(HIDDEN_SIZE * sizeof(float));
-    nn->grad_bias2 = malloc(OUTPUT_SIZE * sizeof(float));
+    nn->grad_bias2 = malloc(HIDDEN_SIZE * sizeof(float));
+    nn->grad_bias3 = malloc(OUTPUT_SIZE * sizeof(float));
 
     initialize_weights(nn->weights1, HIDDEN_SIZE * INPUT_SIZE);
-    initialize_weights(nn->weights2, OUTPUT_SIZE * HIDDEN_SIZE);
+    initialize_weights(nn->weights2, HIDDEN_SIZE * HIDDEN_SIZE);
+    initialize_weights(nn->weights3, OUTPUT_SIZE * HIDDEN_SIZE);
     initialize_bias(nn->bias1, HIDDEN_SIZE);
-    initialize_bias(nn->bias2, OUTPUT_SIZE);
+    initialize_bias(nn->bias2, HIDDEN_SIZE);
+    initialize_bias(nn->bias3, OUTPUT_SIZE);
 }
 
 int main() {
@@ -426,12 +432,16 @@ int main() {
     printf("Time used: %f seconds", cpu_time_used);
     free(nn.weights1);
     free(nn.weights2);
+    free(nn.weights3);
     free(nn.bias1);
     free(nn.bias2);
+    free(nn.bias3);
     free(nn.grad_weights1);
     free(nn.grad_weights2);
+    free(nn.grad_weights3);
     free(nn.grad_bias1);
     free(nn.grad_bias2);
+    free(nn.grad_bias3);
     free(X_train);
     free(y_train);
     free(X_test);
